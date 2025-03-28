@@ -8,11 +8,28 @@ class RoleSerializer(serializers.ModelSerializer):
         model = Role
         fields = '__all__'
         
-class ContactSerializer(serializers.ModelSerializer):
+class ContactSerializerXXX(serializers.ModelSerializer):
     role = RoleSerializer(many=True)
     class Meta:
         model = Contact
         fields = '__all__'
+
+class ContactSerializer(serializers.ModelSerializer):
+    role = RoleSerializer(many=True, required=False)  # Make role optional
+
+    class Meta:
+        model = Contact
+        fields = '__all__'
+
+    def create(self, validated_data):
+        roles_data = validated_data.pop('role', [])
+        contact = Contact.objects.create(**validated_data)
+        if roles_data:
+            # Assuming you want to save related roles if provided
+            for role_data in roles_data:
+                role = Role.objects.get_or_create(**role_data)
+                contact.role.add(role)
+        return contact
 
 class NoteSerializer(serializers.ModelSerializer):
     class Meta:
