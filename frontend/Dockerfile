@@ -1,5 +1,5 @@
 # build stage
-FROM node:lts-alpine as build-stage
+FROM node:lts-alpine AS build-stage
 WORKDIR /app
 COPY package*.json .
 RUN npm install
@@ -13,7 +13,7 @@ RUN npm run build
         #CMD ["nginx", "-g", "daemon off;"]
 
 # Use an official Nginx image as the base image
-FROM nginx as production-stage
+FROM nginx AS production-stage
 
 RUN rm /etc/nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
