@@ -1,5 +1,6 @@
 // deploy-to-production.js
-require('dotenv').config({ path: '/home/john/gits/FCDocker/frontend/tests/pact/.env' });
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 const axios = require('axios');
 const { execSync } = require('child_process');
 

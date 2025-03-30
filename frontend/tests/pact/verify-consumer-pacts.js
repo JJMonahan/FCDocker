@@ -1,5 +1,6 @@
 // verify-all-provider-pacts.js
-require('dotenv').config({ path: '/home/john/gits/FCDocker/frontend/tests/pact/.env' });
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 const axios = require('axios');
 
 const PACTFLOW_URL = process.env.PACTFLOW_URL;
@@ -8,10 +9,14 @@ const PROVIDER_NAME = process.env.PROVIDER_NAME;
 const PROVIDER_VERSION = process.env.PROVIDER_VERSION;
 const ENVIRONMENT = 'production';
 
+console.log('--------------------------------------------');
 console.log('🔐 PactFlow Verification - Auto Mode');
+console.log(' ');
 console.log(`PACTFLOW_URL: ${PACTFLOW_URL}`);
-console.log(`PROVIDER: ${PROVIDER_NAME}`);
-console.log(`VERSION: ${PROVIDER_VERSION}`);
+console.log(`PACTFLOW_TOKEN: ${PACTFLOW_TOKEN}`);
+console.log(`PROVIDER_NAME: ${PROVIDER_NAME}`);
+console.log(`PROVIDER_VERSION: ${PROVIDER_VERSION}`);
+console.log(`ENVIRONMENT: ${ENVIRONMENT}`);
 console.log('--------------------------------------------');
 
 const headers = {
@@ -23,6 +28,7 @@ const headers = {
 async function fetchPactsToVerify() {
   const verifyUrl = `${PACTFLOW_URL}/pacts/provider/${PROVIDER_NAME}/for-verification`;
   console.log(`📎 Fetch URL: ${verifyUrl}`);
+  
   const payload = {
     consumerVersionSelectors: [{ latest: true }],
     providerVersionTags: ['main'],
@@ -30,9 +36,20 @@ async function fetchPactsToVerify() {
     includeWipPactsSince: '2020-01-01'
   };
 
+  console.log('📦 Payload:', JSON.stringify(payload, null, 2));  // Log payload
+
   try {
     const res = await axios.post(verifyUrl, payload, { headers });
-    return res.data._embedded?.pacts || [];
+    const pacts = res.data._embedded?.pacts || [];
+    console.log(`📦 Pacts fetched for verification: ${pacts.length}`);
+
+    // Log the contents of each pact for inspection
+    pacts.forEach((pact, index) => {
+      console.log(`🔍 Pact #${index + 1}:`);
+      console.log(JSON.stringify(pact, null, 2)); // This will print the full pact details
+    });
+
+    return pacts;
   } catch (err) {
     console.error('❌ Failed to fetch pacts for verification:', err.response?.data || err.message);
     process.exit(1);

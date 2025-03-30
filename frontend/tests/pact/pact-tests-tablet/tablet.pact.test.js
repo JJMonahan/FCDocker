@@ -8,7 +8,7 @@ const provider = new Pact({
   consumer: 'Tablet',
   provider: 'Full-Contact-Django-extract',
   logLevel: 'info',
-  dir: path.resolve(__dirname, '../../pacts'),
+  dir: "./pacts",
   spec: 4,
   pactfileWriteMode: 'merge',
 });
