@@ -1,14 +1,14 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "version": "1.0.1",
+    "version": "1.0.2",
     "title": "Full Contact Django Extract",
     "description": "Demonstration of what happens in a code first scenario. This specification was extracted from a non-annotated Django Rest Framework application..."
   },
   "servers": [
     {
       "description": "SwaggerHub API Auto Mocking",
-      "url": "https://virtserver.swaggerhub.com/Monahan-Tutorials/Full-Contact-Django-extract/1.0.1"
+      "url": "https://virtserver.swaggerhub.com/Monahan-Tutorials/Full-Contact-Django-extract/1.0.2"
     },
     {
       "description": "Development Server running on localhost",
@@ -20,7 +20,7 @@
     }
   ],
   "paths": {
-    "/api/mobile/": {
+    "/api/mobilexxx/": {
       "get": {
         "operationId": "get_mobile_status",
         "tags": [

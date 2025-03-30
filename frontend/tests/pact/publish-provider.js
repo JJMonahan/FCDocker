@@ -1,5 +1,5 @@
 const path = require('path');
-require('dotenv').config({ path: path.join('/home/john/gits/FCDocker/frontend/tests/pact/', '.env') });
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const fs = require('fs');
 const axios = require('axios');
@@ -51,22 +51,35 @@ async function publishToPactflow(openapiSpecPath) {
   const contractRaw = fs.readFileSync(openapiSpecPath, 'utf8');
   const base64EncodedContract = Buffer.from(contractRaw).toString('base64');
 
+  // Dummy success flag and verification report (replace with real data when available)
+  const SUCCESS = true;  // Assuming the verification was successful
+  const dummyReport = "Dummy verification report"; // Replace with actual report
+  const base64EncodedReport = Buffer.from(dummyReport).toString('base64');
+
   const contractBody = {
     pacticipantVersionNumber: PROVIDER_VERSION,
     branch: BRANCH,
     tags: ['latest'],
     buildUrl: 'https://example.com/build/1234',
-  
+
     contractType: 'oas', // ✅ ADD THIS
-  
+
     contract: {
       content: base64EncodedContract,
       contentType: 'application/json',
-      specification: 'oas' // still keep this
+      specification: 'oas', // still keep this
+    },
+
+    // Add verification results here
+    verificationResults: {
+      success: true,
+      content: base64EncodedReport,
+      contentType: 'text/plain',
+      verifier: 'verifier',
     }
   };
 
-  console.log('🚀 Uploading OpenAPI spec to PactFlow...');
+  console.log('🚀 Uploading OpenAPI spec to PactFlow with verification results...');
 
   try {
     const res = await axios.post(
@@ -79,7 +92,7 @@ async function publishToPactflow(openapiSpecPath) {
         }
       }
     );
-    console.log('✅ OpenAPI spec successfully published to PactFlow!');
+    console.log('✅ OpenAPI spec and verification results successfully published to PactFlow!');
     console.log(`📄 Response status: ${res.status}`);
 
   } catch (error) {

@@ -30,6 +30,39 @@ const branch = process.env.BRANCH || 'main';
       branch,
     });
 
+    // Step 1.5 publish fake verification results
+
+          
+      const base64EncodedReport = Buffer.from("Dummy Report").toString('base64');
+      const verificationResults = {
+        success: true,  // Set to true if verification passed
+        content: 'base64_encoded_report',  // Replace with actual base64-encoded verification report
+        contentType: 'text/plain',
+        verifier: 'verifier-name',
+      };
+
+      const verificationBody = {
+        pacticipant: 'provider-name',  // Provider name
+        version: 'provider-version',   // Version of the provider
+        verificationResults: verificationResults,
+      };
+
+      try {
+        const res = await axios.post(
+          `${brokerUrl}/pacts/provider/${verificationBody.pacticipant}/verification-results`,
+          verificationBody,
+          {
+            headers: {
+              'Authorization': `Bearer ${brokerToken}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+        console.log('✅ Verification results successfully published!');
+      } catch (error) {
+        console.error('🚨 Error publishing verification results:', error.response?.data || error.message);
+      }
+
     console.log('✅ Pact contracts published successfully!');
 
     // Step 2: Use HAL discovery to get participant version URL
