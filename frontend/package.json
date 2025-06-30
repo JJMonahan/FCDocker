@@ -17,6 +17,7 @@
     "verify-bidi": "node tests/pact/verify-bidi-contracts.js",
     "deploy-provider": "node tests/pact/deploy-provider.js",
     "publish-verification": "node tests/pact/publish-verification.js",
+    "fake-provider-verification": "node tests/pact/fake-provider-verification.js",
     "verify-consumer-pacts": "node tests/pact/verify-consumer-pacts.js",
     "publish-all": "npm run test:pact && npm run publish-pacts && npm run deploy-provider"
   },
@@ -29,9 +30,8 @@
     "vuetify": "^3.0.0"
   },
   "devDependencies": {
-    "@pact-foundation/pact": "^14.0.0",
+    "@pact-foundation/pact": "^15.0.1",
     "@pact-foundation/pact-cli": "^16.0.7",
-    "@pact-foundation/pact-node": "^10.18.0",
     "@vitejs/plugin-vue": "^5.2.3",
     "axios": "^1.8.3",
     "eslint": "^8.22.0",

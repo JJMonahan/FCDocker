@@ -1,168 +1,62 @@
-const axios = require('axios');
 const path = require('path');
+const { execSync } = require('child_process');
+const { Verifier } = require('@pact-foundation/pact');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
-// Load environment variables
-const PACTFLOW_URL = process.env.PACTFLOW_URL;
-const PACTFLOW_TOKEN = process.env.PACTFLOW_TOKEN;
-const PROVIDER_NAME = process.env.PROVIDER_NAME || 'Full-Contact-Django-extract';
-const PROVIDER_VERSION = process.env.PROVIDER_VERSION || '1.0.1';
+const {
+  PACTFLOW_URL,
+  PACTFLOW_TOKEN,
+  PROVIDER_NAME,
+  PROVIDER_VERSION,
+  PROVIDER_BASE_URL,
+  PACT_ENVIRONMENT
+} = process.env;
 
-// Output environment variables for debugging
-console.log('--- Environment Variables ---');
-console.log('PACTFLOW_URL:', PACTFLOW_URL);
-console.log('PACTFLOW_TOKEN:', PACTFLOW_TOKEN ? '********' : 'MISSING');
-console.log('PROVIDER_NAME:', PROVIDER_NAME);
-console.log('PROVIDER_VERSION:', PROVIDER_VERSION);
+// Print env vars
+console.log('\n🔧 Loaded Environment Variables:');
+console.log(`PACTFLOW_URL: ${PACTFLOW_URL}`);
+console.log(`PROVIDER_NAME: ${PROVIDER_NAME}`);
+console.log(`PROVIDER_VERSION: ${PROVIDER_VERSION}`);
+console.log(`PROVIDER_BASE_URL: ${PROVIDER_BASE_URL}`);
+console.log(`PACT_ENVIRONMENT: ${PACT_ENVIRONMENT}\n`);
 
-// Helper function to log raw HTTP request details
-function logRequestDetails(method, url, headers, payload = null) {
-    console.log(`\n--- HTTP REQUEST (${method.toUpperCase()}) ---`);
-    console.log(`URL: ${url}`);
-    console.log('Headers:', JSON.stringify(headers, null, 2));
-    if (payload) {
-        console.log('Payload:', JSON.stringify(payload, null, 2));
-    }
+// Fail fast if anything critical is missing
+if (!PACTFLOW_URL || !PACTFLOW_TOKEN || !PROVIDER_NAME || !PROVIDER_VERSION || !PROVIDER_BASE_URL || !PACT_ENVIRONMENT) {
+  console.error('❌ One or more required environment variables are missing. Check your .env file.');
+  process.exit(1);
 }
 
-// Helper function to log raw HTTP response details
-function logResponseDetails(response) {
-    console.log(`\n--- HTTP RESPONSE (${response.status}) ---`);
-    console.log('Response Headers:', JSON.stringify(response.headers, null, 2));
-    console.log('Response Data:', JSON.stringify(response.data, null, 2));
-}
+// Run verifier and can-i-deploy
+(async () => {
+  try {
+    console.log('🔍 Verifying provider against PactFlow...');
 
-// Fetch pacts for the provider
-async function fetchPacts() {
-    const url = `${PACTFLOW_URL}/pacts/provider/${PROVIDER_NAME}/for-verification`;
-    const headers = {
-        Authorization: `Bearer ${PACTFLOW_TOKEN}`,
-        "Content-Type": "application/json",
-        Accept: "application/hal+json"
-    };
-    const payload = {
-        consumerVersionSelectors: [
-            { mainBranch: true }
-        ],
-        includePendingStatus: true
-    };
+    const verifier = new Verifier({
+      provider: PROVIDER_NAME,
+      providerBaseUrl: PROVIDER_BASE_URL,
+      pactBrokerUrl: PACTFLOW_URL,
+      pactBrokerToken: PACTFLOW_TOKEN,
+      publishVerificationResult: true,
+      providerVersion: PROVIDER_VERSION,
+      consumerVersionSelectors: [{ latest: true }]
+    });
 
-    console.log("\n--- HTTP REQUEST (POST) ---");
-    console.log("URL:", url);
-    console.log("Headers:", JSON.stringify(headers, null, 2));
-    console.log("Payload:", JSON.stringify(payload, null, 2));
+    await verifier.verifyProvider();
+    console.log('\n✅ Pact verification successful and results published.');
 
-    try {
-        const response = await axios.post(url, payload, { headers });
-        console.log("\n--- RESPONSE ---");
-        console.log("Status:", response.status);
-        console.log("Data:", JSON.stringify(response.data, null, 2));
+    console.log('\n🔍 Running can-i-deploy check...');
+    const command = `pact-broker can-i-deploy ` +
+                    `--pacticipant ${PROVIDER_NAME} ` +
+                    `--version ${PROVIDER_VERSION} ` +
+                    `--to-environment ${PACT_ENVIRONMENT} ` +
+                    `--broker-base-url ${PACTFLOW_URL} ` +
+                    `--broker-token ${PACTFLOW_TOKEN}`;
 
-        return response.data._embedded?.pacts || [];
-    } catch (error) {
-        console.error("\n--- ERROR FETCHING PACTS ---");
-        console.error("Error Message:", error.message);
-        if (error.response) {
-            console.error("Response Status:", error.response.status);
-            console.error("Response Headers:", JSON.stringify(error.response.headers, null, 2));
-            console.error("Response Data:", JSON.stringify(error.response.data, null, 2));
-        }
-        return [];
-    }
-}
-
-// Publish verification result for each pact using the correct Pact Broker API URL
-async function publishVerificationResult(pacts) {
-    for (let pact of pacts) {
-        console.log(`\n--- Pact Data ---`);
-        console.log(JSON.stringify(pact, null, 2));  // Log the full pact data for debugging
-
-        const { _links } = pact;
-        const selfLink = _links?.self?.href;  // Retrieve the self link
-
-        if (!selfLink) {
-            console.error(`❌ 'self' link is missing for pact: ${JSON.stringify(pact)}`);
-            continue;  // Skip this pact if 'self' link is missing
-        }
-
-        // Extract the consumer name from the 'self' link
-        const consumerMatch = selfLink.match(/consumer\/([^\/]+)/);
-        if (!consumerMatch) {
-            console.error(`❌ Failed to extract consumer name from self link: ${selfLink}`);
-            continue;  // Skip this pact if consumer name extraction fails
-        }
-
-        const consumerName = consumerMatch[1];  // Extracted consumer name (e.g., "Tablet" or "Website")
-        console.log(`Running Verification for Consumer: ${consumerName}`);
-
-        // Now, extract the pb:publish-verification-results link
-        const publishVerificationLink = _links?.['pb:publish-verification-results']?.href;
-        if (!publishVerificationLink) {
-            console.error(`❌ 'pb:publish-verification-results' link is missing for pact: ${selfLink}`);
-            continue;  // Skip this pact if the publish verification link is missing
-        }
-
-        console.log(`--- Publishing Verification Result to: ${publishVerificationLink} ---`);
-
-        const payload = {
-            verificationResults: [
-                {
-                    consumer: {
-                        name: consumerName
-                    },
-                    provider: {
-                        name: PROVIDER_NAME
-                    },
-                    verificationStatus: 'success',  // Change this based on actual result
-                    message: 'Verification passed',  // Change based on actual result
-                    timestamp: new Date().toISOString()
-                }
-            ]
-        };
-
-        const headers = {
-            Authorization: `Bearer ${PACTFLOW_TOKEN}`,
-            'Content-Type': 'application/json',
-            Accept: 'application/hal+json'
-        };
-
-        logRequestDetails('POST', publishVerificationLink, headers, payload);
-
-        try {
-            const response = await axios.post(publishVerificationLink, payload, { headers });
-            logResponseDetails(response);
-            console.log(`\n✅ Successfully Published Verification Result for Consumer: ${consumerName}`);
-        } catch (error) {
-            console.error(`\n❌ Failed to publish verification result for Consumer: ${consumerName}`);
-            console.error('Error Message:', error.message);
-            if (error.response) {
-                console.error('Response Status:', error.response.status);
-                console.error('Response Headers:', JSON.stringify(error.response.headers, null, 2));
-                console.error('Response Data:', JSON.stringify(error.response.data, null, 2));
-            } else if (error.request) {
-                console.error('No response received. Request details:', error.request);
-            }
-        }
-    }
-}
-
-// Main process
-async function main() {
-    console.log('\n--- Starting Main Process ---');
-
-    // Fetch pending pacts for the provider
-    const pacts = await fetchPacts();
-    if (pacts.length === 0) {
-        console.log('\nNo pending pacts found for verification.');
-        return;
-    }
-
-    console.log('\n--- Pacts Fetched ---');
-    console.log(JSON.stringify(pacts, null, 2));
-
-    // Run the verification for each pact
-    await publishVerificationResult(pacts);
-}
-
-// Call the main function to start
-main();
+    execSync(command, { stdio: 'inherit' });
+    console.log(`\n🚀 Can deploy ${PROVIDER_NAME}@${PROVIDER_VERSION} to ${PACT_ENVIRONMENT}`);
+  } catch (err) {
+    console.error('\n❌ Error during provider verification or can-i-deploy check:');
+    console.error(err.message || err);
+    process.exit(1);
+  }
+})();
