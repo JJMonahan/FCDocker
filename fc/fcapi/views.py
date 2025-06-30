@@ -12,6 +12,8 @@ from .serializers import (
     JobSerializer,
     LogSerializer,
 )
+from rest_framework.views import APIView
+from rest_framework import status as drf_status
 
 class ContactViewSet(viewsets.ModelViewSet):
     queryset = Contact.objects.all().order_by('lname','fname')
@@ -52,4 +54,18 @@ class LogViewSet(viewsets.ModelViewSet):
     queryset = Log.objects.all()
     serializer_class = LogSerializer
 
+class MobileStatusView(APIView):
+    def get(self, request):
+        return Response({"status": "Mobile app OK"}, status=drf_status.HTTP_200_OK)
 
+class DesktopStatusView(APIView):
+    def get(self, request):
+        return Response({"status": "Desktop app OK"}, status=drf_status.HTTP_200_OK)
+
+class WebsiteStatusView(APIView):
+    def get(self, request):
+        return Response({"status": "Website OK"}, status=drf_status.HTTP_200_OK)
+
+class TabletStatusView(APIView):
+    def get(self, request):
+        return Response({"status": "Tablet OK"}, status=drf_status.HTTP_200_OK)
