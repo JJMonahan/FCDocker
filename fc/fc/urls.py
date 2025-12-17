@@ -8,10 +8,10 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     #admin urls
-    path('admin/', admin.site.urls),
-    path('api/', include('fcapi.urls')),
-    path('schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('admin/?', admin.site.urls),
+    path('api/?', include('fcapi.urls')),
+    path('schema/?', SpectacularAPIView.as_view(), name='schema'),
+    path('schema/swagger-ui/?', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('', TemplateView.as_view(template_name='index.html')),
 ]
 

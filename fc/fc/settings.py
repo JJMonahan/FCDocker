@@ -28,6 +28,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+# Disable automatic trailing slash appending
+APPEND_SLASH = False
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # Add the URL of your Vue.js app
 ]
