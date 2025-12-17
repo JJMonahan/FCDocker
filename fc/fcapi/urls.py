@@ -20,8 +20,8 @@ router.register(r'logs', LogViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('mobile/', MobileStatusView.as_view(), name='mobile-status'),
-    path('desktop/', DesktopStatusView.as_view(), name='desktop-status'),
-    path('website/', WebsiteStatusView.as_view(), name='website-status'),
-    path('tablet/', TabletStatusView.as_view(), name='tablet-status'),
+    path('mobile/?', MobileStatusView.as_view(), name='mobile-status'),
+    path('desktop/?', DesktopStatusView.as_view(), name='desktop-status'),
+    path('website/?', WebsiteStatusView.as_view(), name='website-status'),
+    path('tablet/?', TabletStatusView.as_view(), name='tablet-status'),
 ]
