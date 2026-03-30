@@ -14,6 +14,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+      start_period: 10s
     ports:
       - "5433:5432"
 
@@ -26,6 +27,18 @@ services:
     restart: always
     volumes:
       - staticvolume:/usr/share/nginx/html/static
+    depends_on:
+      backend:
+        condition: service_healthy
+
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost/favicon.ico > /dev/null || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+    
       
   backend:
     container_name: backend
@@ -39,14 +52,18 @@ services:
     ports:
       - "8000:8000"
 
+    restart: always
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+
 
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8000/admin" ] 
-      interval: 120s
+      test: [ "CMD", "curl", "-fsS", "http://localhost:8000/api/companies/" ]
+      interval: 5s
       timeout: 5s
       retries: 5
+      start_period: 10s
 
 volumes:
   pgdata:
