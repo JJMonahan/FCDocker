@@ -1,0 +1,56 @@
+# yaml-language-server: $schema=https://download.pactflow.io/drift/schemas/drift.testcases.v1.schema.json
+drift-testcase-file: v1
+title: "Full Contact API Verification"
+sources:
+  - name: fullcontact-oas
+    uri: http://localhost:8000/schema/
+    # Alternative: use local OpenAPI file
+    # uri: ./tests/pact/openapi.json
+plugins:
+  - name: oas
+  - name: json
+  - name: http-dump
+
+operations:
+
+  # Test company list endpoint
+  getCompanies_Success:
+    target: fullcontact-oas:fcapi_company_list
+    description: "Retrieve list of companies"
+    sequence: 0
+    expected:
+      response:
+        statusCode: 200
+
+  # Test contact list endpoint  
+  getContacts_Success:
+    target: fullcontact-oas:fcapi_contact_list
+    description: "Retrieve list of contacts"
+    sequence: 0
+    expected:
+      response:
+        statusCode: 200
+
+  # Test create company
+  createCompany_Success:
+    target: fullcontact-oas:fcapi_company_create
+    description: "Create a new company"
+    sequence: 1
+    parameters:
+      request:
+        body:
+          name: "Test Company"
+          website: "https://testcompany.com"
+          description: "Test company for Drift verification"
+    expected:
+      response:
+        statusCode: 201
+
+  # Test mobile status endpoint (with proper trailing slash)
+  getMobileStatus_Success:
+    target: fullcontact-oas:mobile-status
+    description: "Check mobile app status"
+    sequence: 0
+    expected:
+      response:
+        statusCode: 200
