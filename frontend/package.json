@@ -22,8 +22,10 @@
     "publish-all": "npm run test:pact && npm run publish-pacts && npm run deploy-provider",
     "drift:help": "npx @pactflow/drift --help",
     "drift:auth": "npx @pactflow/drift auth login", 
-    "drift:verify": "npx @pactflow/drift verify --test-files drift.yaml --server-url http://localhost:8000",
+    "drift:verify": "npx --yes dotenv-cli -e .env.local -- @pactflow/drift verify --test-files drift.yaml --server-url http://localhost:8000",
+    "drift:verify-swaggerhub-only": "npx --yes dotenv-cli -e .env.local -- @pactflow/drift verify --test-files drift.yaml",
     "drift:init": "npx @pactflow/drift init",
+    "drift:test-setup": "node test-drift-setup.js",
     "api:verify": "node simple-api-verify.js",
     "test:all": "npm run test:pact && npm run drift:verify"
   },

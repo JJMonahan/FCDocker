@@ -24,16 +24,42 @@ Vue.js Frontend
 
 ## 📦 Installation & Setup
 
-### Prerequisites
-1. **PactFlow Account**: Sign up at [pactflow.io](https://pactflow.io) for free trial
-2. **API Token**: Get from PactFlow → Settings → API Tokens  
+### Fresh Clone Setup (New Computer/Developer)
 
-### Authentication
+If you're cloning this repo to a new computer, follow these steps:
+
 ```bash
-# One-time setup - authenticate with PactFlow
+# 1. Clone and navigate to frontend
+git clone <repo-url>
+cd FCDocker/frontend
+
+# 2. Install Node.js dependencies
+npm install
+
+# 3. Set up environment configuration
+cp .env.example .env.local
+# Edit .env.local and add your SwaggerHub API token
+
+# 4. Start Docker services (required for API testing)
+cd ..
+docker-compose up -d
+
+# 5. Verify API is running
+cd frontend
+npm run api:verify
+
+# 6. Test drift setup
+npm run drift:test-setup
+
+# 7. Authenticate with PactFlow (one-time)
 npm run drift:auth
-# Enter your PactFlow workspace URL and API token
 ```
+
+### Prerequisites
+1. **Node.js** (v16+) and **npm**
+2. **Docker** and **Docker Compose** 
+3. **SwaggerHub Account**: Get API token from SwaggerHub → Settings → API Keys
+4. **PactFlow Account**: Sign up at [pactflow.io](https://pactflow.io) for free trial
 
 ## 🚀 Usage
 
