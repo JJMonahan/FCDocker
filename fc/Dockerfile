@@ -10,8 +10,9 @@ WORKDIR /app
 # Copy the current directory contents into the container at /app
 COPY . /app/
 
-# Install dependencies
-RUN pip install --upgrade pip && pip install -r requirements.txt
+# Install dependencies with SSL certificate bypass for corporate networks
+RUN pip install --upgrade pip --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org
+RUN pip install -r requirements.txt --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org
 
 
 # Make port 8000 available to the world outside this container
