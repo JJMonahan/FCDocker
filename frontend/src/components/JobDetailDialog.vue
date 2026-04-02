@@ -31,6 +31,9 @@
         </v-row>
       </v-card-text>
 
+      <!-- Add NoteList component here -->
+      <note-list :parentid="job.id" modelName="job" />
+
       <v-card-actions>
         <v-btn @click="editJob">Edit Job Record</v-btn>
         <v-btn @click="closeDialog">Close Job Detail</v-btn>
@@ -43,6 +46,7 @@
 import JobDetailsChips from './JobDetailsChips.vue';
 import ContactCard from './ContactCard.vue';
 import CompanyCard from './CompanyCard.vue';
+import NoteList from './NoteList.vue';
 import { statusChoiceMappings, priorityChoiceMappings, locationChoiceMappings, travelChoiceMappings } from '@/config/choiceMappings.js';
 
 export default {
@@ -50,6 +54,7 @@ export default {
     ContactCard,
     JobDetailsChips,
     CompanyCard,
+    NoteList,
   },
   props: {
     job: Object,

@@ -1,10 +1,31 @@
 # build stage
-FROM node:lts-alpine as build-stage
+FROM node:lts-alpine AS build-stage
 WORKDIR /app
 COPY package*.json .
-RUN npm install
+# Configure npm for corporate networks (ZScaler, etc.) with SSL/proxy issues  
+RUN npm config set strict-ssl false && \
+    npm config set registry http://registry.npmjs.org/ && \
+    npm config set fetch-retries 5 && \
+    npm config set fetch-retry-factor 2 && \
+    npm config set fetch-timeout 60000 && \
+    npm install --no-audit --no-fund
 COPY . .
 RUN npm run build
+
+# development stage (keeps Node.js and dev tools like Drift)
+FROM node:lts-alpine AS development-stage
+WORKDIR /app
+COPY package*.json .
+# Configure npm for corporate networks (ZScaler, etc.) with SSL/proxy issues  
+RUN npm config set strict-ssl false && \
+    npm config set registry http://registry.npmjs.org/ && \
+    npm config set fetch-retries 5 && \
+    npm config set fetch-retry-factor 2 && \
+    npm config set fetch-timeout 60000 && \
+    npm install --no-audit --no-fund
+COPY . .
+# Keep container running for development tools
+CMD ["tail", "-f", "/dev/null"]
 
 # production stage
         #FROM nginx:stable-alpine as production-stage
@@ -13,7 +34,7 @@ RUN npm run build
         #CMD ["nginx", "-g", "daemon off;"]
 
 # Use an official Nginx image as the base image
-FROM nginx as production-stage
+FROM nginx AS production-stage
 
 RUN rm /etc/nginx/nginx.conf /etc/nginx/conf.d/default.conf
 

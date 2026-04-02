@@ -1,6 +1,6 @@
 
 from django.test import TestCase
-from .models import Company, Role, Contact, Note, Job, Log
+from ..models import Company, Role, Contact, Note, Job, Log
 from django.utils import timezone
 
 class CompanyModelTest(TestCase):

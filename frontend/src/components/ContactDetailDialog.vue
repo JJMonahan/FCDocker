@@ -6,6 +6,8 @@
             <v-card-title>{{ contact.fname }} {{ contact.lname }}</v-card-title>
             <v-card-subtitle>{{ contact.fname }} {{ contact.lname }}</v-card-subtitle>
            
+            <!-- Add NoteList component here -->
+            <note-list :parentid="contact.id" modelName="contact" />
 
             <v-card-actions>
                 <v-btn @click="editContact">Edit Contact Record</v-btn>
@@ -16,9 +18,13 @@
 </template>
   
 <script>
+import NoteList from './NoteList.vue';
 
 export default {
-   
+    components: {
+        NoteList,
+    },
+
     props: {
         contact: Object,
     },

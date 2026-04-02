@@ -1,6 +1,6 @@
 <!-- CompanyCard.vue -->
 <template>
-    <v-card class="m-card-height" @click="showCompanyDetails">
+    <v-card :id="'company-card-' + company.id" lass="m-card-height" @click="showCompanyDetails">
       <v-card-title>{{ company.name }}</v-card-title>
       <v-card-subtitle>{{ company.address }}</v-card-subtitle>
       <v-card-text class="trunc-3">{{ company.description }}</v-card-text>

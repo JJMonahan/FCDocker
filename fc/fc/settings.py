@@ -28,6 +28,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+# Disable automatic trailing slash appending
+APPEND_SLASH = False
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # Add the URL of your Vue.js app
 ]
@@ -46,6 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'fcapi',
+    'drf_spectacular',
    
 ]
 
@@ -152,7 +156,28 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'PAGE_SIZE': 10
+}
+
+# drf-spectacular settings for proper OpenAPI schema generation
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Full Contact Django Extract',
+    'DESCRIPTION': 'Django REST API for full contact management system',
+    'VERSION': '1.0.2',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SCHEMA_PATH_PREFIX': '/api/',
+    'DEFAULT_GENERATOR_CLASS': 'drf_spectacular.generators.SchemaGenerator',
+    # Set proper MIME types for ReadyAPI/SwaggerHub Studio compatibility
+    'SERVE_PERMISSIONS': ['rest_framework.permissions.AllowAny'],
+    'SERVE_AUTHENTICATION': [],
+    # Configure schema format - JSON is most compatible
+    'SCHEMA_COERCE_METHOD_NAMES': {
+        'retrieve': 'get',
+        'destroy': 'delete'
+    },
+    'COMPONENT_SPLIT_REQUEST': True,
+    'SORT_OPERATIONS': False,
 }
 
 
