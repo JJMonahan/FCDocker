@@ -1,0 +1,21 @@
+{
+  "name": "fc-backend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "pact:debug": "node pact/debug.js",
+    "pact:test": "jest pact --runInBand",
+    "pact:publish": "node pact/publish-pacts.js",
+    "pact:verify": "node pact/verify-provider.js",
+    "pact:deploy": "node pact/deploy-provider.js",
+    "pact:all": "npm run pact:test && npm run pact:publish && npm run pact:deploy",
+    "drift:verify": "drift verify --test-files drift/drift.yaml --server-url http://localhost:8000",
+    "drift:generate": "node drift/generate-tests.js",
+    "drift:auth": "drift auth login",
+    "drift:all": "npm run drift:verify",
+    "test:api": "npm run pact:all && npm run drift:all",
+    "django:migrate": "python manage.py migrate",
+    "django:test": "python manage.py test",
+    "django:serve": "python manage.py runserver"
+  }
+}
