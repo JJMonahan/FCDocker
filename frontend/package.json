@@ -19,11 +19,7 @@
     "publish-verification": "node tests/pact/publish-verification.js",
     "fake-provider-verification": "node tests/pact/fake-provider-verification.js",
     "verify-consumer-pacts": "node tests/pact/verify-consumer-pacts.js",
-    "publish-all": "npm run test:pact && npm run publish-pacts && npm run deploy-provider",
-    "drift:help": "drift --help",
-    "drift:auth": "drift auth login", 
-    "drift:verify": "drift verify --test-files drift.yaml --server-url http://localhost:8000",
-    "drift:init": "drift init"
+    "publish-all": "npm run test:pact && npm run publish-pacts && npm run deploy-provider"
   },
   "dependencies": {
     "@mdi/font": "7.0.96",
@@ -36,7 +32,6 @@
   "devDependencies": {
     "@pact-foundation/pact": "^15.0.1",
     "@pact-foundation/pact-cli": "^16.0.7",
-    "@pactflow/drift": "*",
     "@vitejs/plugin-vue": "^5.2.3",
     "axios": "^1.8.3",
     "dotenv-cli": "^8.0.0",

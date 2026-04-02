@@ -12,7 +12,7 @@ RUN npm config set strict-ssl false && \
 COPY . .
 RUN npm run build
 
-# development stage (keeps Node.js and dev tools like Drift)
+# development stage (keeps Node.js and dev tools)
 FROM node:lts-alpine AS development-stage
 WORKDIR /app
 COPY package*.json .
