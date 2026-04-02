@@ -32,8 +32,10 @@ additional_patterns = [
 ]
 urlpatterns = [
     path('', include(router.urls)),
-    path('mobile/?', MobileStatusView.as_view(), name='mobile-status'),
-    path('desktop/?', DesktopStatusView.as_view(), name='desktop-status'),
-    path('website/?', WebsiteStatusView.as_view(), name='website-status'),
-    path('tablet/?', TabletStatusView.as_view(), name='tablet-status'),
+    re_path(r'^mobile/?$', MobileStatusView.as_view(), name='mobile-status'),
+    re_path(r'^desktop/?$', DesktopStatusView.as_view(), name='desktop-status'),
+    re_path(r'^website/?$', WebsiteStatusView.as_view(), name='website-status'),
+    re_path(r'^tablet/?$', TabletStatusView.as_view(), name='tablet-status'),
+    # Add singular contact endpoint as required by SwaggerHub Studio
+    re_path(r'^contact/?$', ContactViewSet.as_view({'get': 'list', 'post': 'create'}), name='contact-singular'),
 ] + additional_patterns

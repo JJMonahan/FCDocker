@@ -160,4 +160,24 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10
 }
 
+# drf-spectacular settings for proper OpenAPI schema generation
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Full Contact Django Extract',
+    'DESCRIPTION': 'Django REST API for full contact management system',
+    'VERSION': '1.0.2',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SCHEMA_PATH_PREFIX': '/api/',
+    'DEFAULT_GENERATOR_CLASS': 'drf_spectacular.generators.SchemaGenerator',
+    # Set proper MIME types for ReadyAPI/SwaggerHub Studio compatibility
+    'SERVE_PERMISSIONS': ['rest_framework.permissions.AllowAny'],
+    'SERVE_AUTHENTICATION': [],
+    # Configure schema format - JSON is most compatible
+    'SCHEMA_COERCE_METHOD_NAMES': {
+        'retrieve': 'get',
+        'destroy': 'delete'
+    },
+    'COMPONENT_SPLIT_REQUEST': True,
+    'SORT_OPERATIONS': False,
+}
+
 
