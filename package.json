@@ -2,23 +2,27 @@
   "name": "fcdocker",
   "version": "1.0.0",
   "private": true,
-  "workspaces": ["frontend"],
+  "workspaces": ["frontend", "fc"],
   "scripts": {
     "frontend:dev": "npm run dev --workspace=frontend",
-    "frontend:build": "npm run build --workspace=frontend",
+    "frontend:build": "npm run build --workspace=frontend", 
     "frontend:test": "npm run test --workspace=frontend",
-    "backend:test-contracts": "cd fc && npm run pact:all && npm run drift:all",
+    "backend:test-contracts": "cd fc && npm run test:api",
     "test:all": "npm run frontend:test && npm run backend:test-contracts",
     "dev:full": "docker-compose up -d && npm run frontend:dev",
-    "setup": "npm install && cd fc && pip install -r requirements.txt"
+    "setup": "npm install && cd fc && pip install -r requirements.txt",
+    "env:copy": "cp .env.example .env",
+    "env:copy-prod": "cp .env.production.example .env.production",
+    "env:validate": "node -r dotenv/config -e \"console.log('Environment loaded successfully')\"",
+    "dev:start": "docker-compose --env-file .env up -d",
+    "prod:start": "docker-compose --env-file .env.production up -d",
+    "contracts:test": "cd fc && npm run test:api",
+    "contracts:drift": "cd fc && npm run drift:all", 
+    "contracts:pact": "cd fc && npm run pact:all",
+    "contracts:all": "npm run contracts:pact && npm run contracts:drift"
   },
   "devDependencies": {
-    "@pactflow/drift": "*",
-    "@pact-foundation/pact": "^15.0.1",
-    "@pact-foundation/pact-cli": "^16.0.7",
-    "jest": "^29.7.0",
     "dotenv": "^16.6.1",
-    "axios": "^1.8.3",
     "dotenv-cli": "^8.0.0"
   }
 }

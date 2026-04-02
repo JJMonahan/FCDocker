@@ -1,0 +1,89 @@
+# yaml-language-server: $schema=https://download.pactflow.io/drift/schemas/drift.testcases.v1.schema.json
+drift-testcase-file: v1
+title: "Full Contact API Consumer Tests (Frontend)"
+description: "Consumer-side contract verification from frontend perspective"
+
+sources:
+  - name: fullcontact-api
+    path: ${BACKEND_URL}/schema/
+  - name: swagger-hub
+    path: https://api.swaggerhub.com/apis/${SWAGGERHUB_ORGANIZATION}/FullContactAPIOpenApi3DRF/v1.0.2
+
+plugins:
+  - name: oas
+  - name: json
+
+operations:
+  # Company API Tests
+  getAllCompanies:
+    target: fullcontact-api:get:/api/companies/
+    description: "List all companies"
+    tags: ["companies", "read-only"]
+    expected:
+      response:
+        statusCode: 200
+        
+  createCompany:
+    target: fullcontact-api:post:/api/companies/
+    description: "Create new company"
+    tags: ["companies", "write"]
+    parameters:
+      request:
+        body:
+          name: "Drift Test Company"
+          industry: "Technology"
+    expected:
+      response:
+        statusCode: 201
+
+  # Contact API Tests  
+  getAllContacts:
+    target: fullcontact-api:get:/api/contacts/
+    description: "List all contacts"
+    tags: ["contacts", "read-only"]
+    expected:
+      response:
+        statusCode: 200
+        
+  createContact:
+    target: fullcontact-api:post:/api/contacts/
+    description: "Create new contact"
+    tags: ["contacts", "write"] 
+    parameters:
+      request:
+        body:
+          first_name: "Drift"
+          last_name: "Tester"
+          email: "drift.test@example.com"
+    expected:
+      response:
+        statusCode: 201
+
+  # Job API Tests
+  getAllJobs:
+    target: fullcontact-api:get:/api/jobs/
+    description: "List all jobs"
+    tags: ["jobs", "read-only"]
+    expected:
+      response:
+        statusCode: 200
+        
+  createJob:
+    target: fullcontact-api:post:/api/jobs/
+    description: "Create new job"
+    tags: ["jobs", "write"]
+    parameters:
+      request:
+        body:
+          title: "Drift Test Position"
+          description: "Testing API drift compliance"
+    expected:
+      response:
+        statusCode: 201
+
+# Test Execution Configuration
+execution:
+  environment: development
+  version: 1.0.0
+  parallel: false
+  timeout: 30000
