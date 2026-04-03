@@ -21,21 +21,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-q)#endol!ply4yl%#fb!508=t-_&cq_1ps^un6p=n)j!7ll+!a'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-q)#endol!ply4yl%#fb!508=t-_&cq_1ps^un6p=n)j!7ll+!a')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '*').split(',')
 
 # Disable automatic trailing slash appending
 APPEND_SLASH = False
 
+# CORS Configuration - Environment-based for security and flexibility
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # Add the URL of your Vue.js app
+    os.environ.get('FRONTEND_URL', 'http://localhost:3000'),
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
+# Enable for development, should be False in production
+CORS_ALLOW_ALL_ORIGINS = os.environ.get('CORS_ALLOW_ALL', 'True').lower() == 'true'
 
 # Application definition
 
@@ -90,7 +92,8 @@ WSGI_APPLICATION = 'fc.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# HOST needs to be the name of the postgress container, not localhost
+# Environment-based database configuration
+# HOST needs to be the name of the postgres container, not localhost
 # likewise PORT should be the internal docker port, 5432 not the portmapped 5433 exposed to host
 # run this command after rebuilding postgres container if you trash the database and rebuild from scratch:
 # docker exec -it backend python manage.py createsuperuser
@@ -98,11 +101,11 @@ WSGI_APPLICATION = 'fc.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'fullcontact', 
-        'USER': 'postgres', 
-        'PASSWORD': 'postgres',
-        'HOST': 'postgres',
-        'PORT': '5432', 
+        'NAME': os.environ.get('POSTGRES_DB', 'fullcontact'),
+        'USER': os.environ.get('POSTGRES_USER', 'postgres'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'postgres'),
+        'HOST': os.environ.get('POSTGRES_HOST', 'postgres'),
+        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
     }
 }
 

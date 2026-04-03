@@ -1,82 +1,89 @@
 # yaml-language-server: $schema=https://download.pactflow.io/drift/schemas/drift.testcases.v1.schema.json
 drift-testcase-file: v1
-title: "Full Contact API Verification (SwaggerHub Golden Source)"
+title: "Full Contact API Consumer Tests (Frontend)"
+description: "Consumer-side contract verification from frontend perspective"
+
 sources:
-  - name: fullcontact-swaggerhub
-    # Pull from your published SwaggerHub API (golden source of truth)
-    uri: https://api.swaggerhub.com/apis/Monahan-Tutorials/Full-Contact-Django-extract/1.0.2
-    headers:
-      Authorization: "Bearer ${SWAGGERHUB_API_TOKEN}"
+  - name: fullcontact-api
+    path: ${BACKEND_URL}/schema/
+  - name: swagger-hub
+    path: https://api.swaggerhub.com/apis/${SWAGGERHUB_ORGANIZATION}/FullContactAPIOpenApi3DRF/v1.0.2
+
 plugins:
   - name: oas
   - name: json
-  - name: http-dump
 
 operations:
-
-  # Test company list endpoint (using SwaggerHub operationId)
-  getCompanies_Success:
-    target: fullcontact-swaggerhub:api_companies_list
-    description: "Retrieve list of companies (vs SwaggerHub spec)"
-    sequence: 0
+  # Company API Tests
+  getAllCompanies:
+    target: fullcontact-api:get:/api/companies/
+    description: "List all companies"
+    tags: ["companies", "read-only"]
     expected:
       response:
         statusCode: 200
-
-  # Test contact list endpoint  
-  getContacts_Success:
-    target: fullcontact-swaggerhub:api_contacts_list
-    description: "Retrieve list of contacts (vs SwaggerHub spec)"
-    sequence: 0
-    expected:
-      response:
-        statusCode: 200
-
-  # Test create company
-  createCompany_Success:
-    target: fullcontact-swaggerhub:api_companies_create
-    description: "Create a new company (vs SwaggerHub spec)"
-    sequence: 1
+        
+  createCompany:
+    target: fullcontact-api:post:/api/companies/
+    description: "Create new company"
+    tags: ["companies", "write"]
     parameters:
       request:
         body:
           name: "Drift Test Company"
-          description: "Test company for SwaggerHub Drift verification"
+          industry: "Technology"
     expected:
       response:
         statusCode: 201
 
-  # Test mobile status endpoint (exact operationId from SwaggerHub)
-  getMobileStatus_Success:
-    target: fullcontact-swaggerhub:get_mobile_status
-    description: "Check mobile app status (vs SwaggerHub spec)"
-    sequence: 0
+  # Contact API Tests  
+  getAllContacts:
+    target: fullcontact-api:get:/api/contacts/
+    description: "List all contacts"
+    tags: ["contacts", "read-only"]
     expected:
       response:
         statusCode: 200
+        
+  createContact:
+    target: fullcontact-api:post:/api/contacts/
+    description: "Create new contact"
+    tags: ["contacts", "write"] 
+    parameters:
+      request:
+        body:
+          first_name: "Drift"
+          last_name: "Tester"
+          email: "drift.test@example.com"
+    expected:
+      response:
+        statusCode: 201
 
-  # Test desktop status 
-  getDesktopStatus_Success:
-    target: fullcontact-swaggerhub:get_desktop_status
-    description: "Check desktop app status (vs SwaggerHub spec)"
-    sequence: 0
+  # Job API Tests
+  getAllJobs:
+    target: fullcontact-api:get:/api/jobs/
+    description: "List all jobs"
+    tags: ["jobs", "read-only"]
     expected:
       response:
         statusCode: 200
+        
+  createJob:
+    target: fullcontact-api:post:/api/jobs/
+    description: "Create new job"
+    tags: ["jobs", "write"]
+    parameters:
+      request:
+        body:
+          title: "Drift Test Position"
+          description: "Testing API drift compliance"
+    expected:
+      response:
+        statusCode: 201
 
-  # Test other key endpoints
-  getNotes_Success:
-    target: fullcontact-swaggerhub:api_notes_list
-    description: "Retrieve notes list (vs SwaggerHub spec)"
-    sequence: 0
-    expected:
-      response:
-        statusCode: 200
-
-  getRoles_Success:
-    target: fullcontact-swaggerhub:api_roles_list
-    description: "Retrieve roles list (vs SwaggerHub spec)"
-    sequence: 0
-    expected:
-      response:
-        statusCode: 200
+# Test Execution Configuration
+execution:
+  environment: development
+  version: 1.0.0
+  parallel: false
+  timeout: 30000
