@@ -6,9 +6,9 @@ description: "API endpoint testing for Django backend services"
 sources:
   - name: fullcontact-swaggerhub
     # Pull from your published SwaggerHub API (golden source of truth)
-    uri: https://api.swaggerhub.com/apis/Monahan-Tutorials/Full-Contact-Django-extract/1.0.2
+    uri: https://api.swaggerhub.com/apis/Monahan-Tutorials/Full-Contact-Django-extract/1.0.2/swagger.json
     headers:
-      Authorization: "Bearer ${SWAGGERHUB_API_TOKEN}"
+      Authorization: "${SWAGGERHUB_API_TOKEN}"
 
 plugins:
   - name: oas

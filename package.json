@@ -17,7 +17,7 @@
     "dev:start": "docker-compose --env-file .env up -d",
     "prod:start": "docker-compose --env-file .env.production up -d",
     "contracts:test": "cd fc && npm run test:api",
-    "contracts:drift": "cd fc && npm run drift:all", 
+    "contracts:drift": "docker exec backend npm run drift:all", 
     "contracts:pact": "cd fc && npm run pact:all",
     "contracts:all": "npm run contracts:pact && npm run contracts:drift"
   },

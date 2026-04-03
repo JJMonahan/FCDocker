@@ -1,0 +1,13 @@
+version: v1
+tests:
+  - name: companies API test
+    description: Test companies endpoint
+    plugin: 
+      name: drift:plugins/operations
+      config:
+        operations:
+          - api_companies_list
+        api:
+          name: Full Contact Django Extract
+          specification:
+            url: file://./fullcontact-api-unix.json

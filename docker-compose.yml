@@ -45,6 +45,7 @@ services:
       target: development-stage
     volumes:
       - ./frontend:/app
+      - ./.env:/app/.env:ro  # Copy environment file into container
     depends_on:
       - backend
     environment:
@@ -63,6 +64,7 @@ services:
     volumes:
       - staticvolume:/app/static
       - ./fc/fcapi/migrations:/app/fcapi/migrations  # Mount host directory to container path
+      - ./.env:/app/.env:ro  # Copy environment file into container
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
@@ -74,6 +76,12 @@ services:
       - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
       - PACTFLOW_BROKER_BASE_URL=${PACTFLOW_BROKER_BASE_URL}
       - PACTFLOW_BROKER_TOKEN=${PACTFLOW_BROKER_TOKEN}
+      - DRIFT_TENANT_URL=${PACTFLOW_BROKER_BASE_URL}
+      - SWAGGERHUB_API_TOKEN=${SWAGGERHUB_API_TOKEN}
+      - SWAGGERHUB_ENDPOINT=${SWAGGERHUB_ENDPOINT}
+      - SWAGGERHUB_ORGANIZATION=${SWAGGERHUB_ORGANIZATION}
+      - SWAGGERHUB_API_NAME=${SWAGGERHUB_API_NAME}
+      - SWAGGERHUB_API_VERSION=${SWAGGERHUB_API_VERSION}
     ports:
       - "8000:8000"
     restart: always
