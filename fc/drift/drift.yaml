@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=https://download.pactflow.io/drift/schemas/drift.testcases.v1.schema.json
+drift-testcase-file: v1
+title: "Full Contact API Verification (Backend Testing)"
+description: "API endpoint testing for Django backend services"
+
+sources:
+  - name: fullcontact-swaggerhub
+    # Pull from your published SwaggerHub API (golden source of truth)
+    uri: https://api.swaggerhub.com/apis/Monahan-Tutorials/Full-Contact-Django-extract/1.0.2/swagger.json
+    headers:
+      Authorization: "${SWAGGERHUB_API_TOKEN}"
+
+plugins:
+  - name: oas
+  - name: json
+  - name: http-dump
+
+operations:
+  # Basic health check - ready for expansion
+  getCompanies_Success:
+    target: fullcontact-swaggerhub:api_companies_list
+    description: "Retrieve list of companies (vs SwaggerHub spec)"
+    expected:
+      response:
+        statusCode: 200
+
+  getContacts_Success:
+    target: fullcontact-swaggerhub:api_contacts_list
+    description: "Retrieve list of contacts (vs SwaggerHub spec)"
+    expected:
+      response:
+        statusCode: 200

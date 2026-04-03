@@ -1,0 +1,20 @@
+drift-testcase-file: v1
+title: "Companies API Test"
+description: "Simple test of GET /api/companies endpoint"
+
+sources:
+  - name: fullcontact-swaggerhub
+    uri: https://api.swaggerhub.com/apis/Monahan-Tutorials/Full-Contact-Django-extract/1.0.2/swagger.json
+    headers:
+      Authorization: 42576ec1-5734-4a57-9b5f-da1090af8d68
+
+plugins:
+  - name: oas
+
+operations:
+  test_get_companies:
+    target: fullcontact-swaggerhub:api_companies_list
+    description: "Test GET /api/companies returns 200"
+    expected:
+      response:
+        statusCode: 200

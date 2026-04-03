@@ -5,7 +5,12 @@ __pycache__/
 *.pyd
 *.db
 *.sqlite3
-*.pyc
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
 
 # Django
 *.pyc
@@ -16,27 +21,38 @@ __pycache__/
 media/
 static/
 
-# Vue.js
-/dist/
-/node_modules/
+# Frontend (Vue.js/Node.js)
+node_modules/
+/frontend/dist/
+/frontend/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Logs
 *.log
 
 # Docker
 .dockerignore
 .docker/
 
-# Environment variables (customize as needed)
-.env
+# Testing & Contract Testing  
+drift-reports/
+*.drift.json
+pacts/
 
-# Editor/IDE specific files (customize as needed)
+# Editor/IDE files
 .vscode/
 .idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 # Miscellaneous
-*.log
 *.pot
-*.pyo
-*.pyc
 *.class
 *.map
 

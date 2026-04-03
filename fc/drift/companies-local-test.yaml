@@ -1,0 +1,18 @@
+drift-testcase-file: v1
+title: "Companies API Test (Local Spec)"
+description: "Test against local SwaggerHub API spec"
+
+sources:
+  - name: fullcontact-local
+    path: fullcontact-api-clean.json
+
+plugins:
+  - name: oas
+
+operations:
+  test_get_companies:
+    target: fullcontact-local:api_companies_list
+    description: "Test GET /api/companies returns 200"
+    expected:
+      response:
+        statusCode: 200
